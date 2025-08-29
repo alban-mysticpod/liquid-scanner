@@ -4,8 +4,8 @@ import path from 'path';
 
 export async function GET(request: NextRequest) {
   try {
-    // Path to the Horizon Theme folder
-    const themeRootPath = path.resolve(process.cwd(), '..');
+    // Path to the ThemeFiles folder inside the project
+    const themeRootPath = path.resolve(process.cwd(), 'ThemeFiles');
     
     console.log('Scanning directory:', themeRootPath);
     
