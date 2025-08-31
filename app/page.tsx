@@ -2,6 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import FileExplorer from './components/FileExplorer';
+import PagesView from './components/PagesView';
+import SectionBlocksView from './components/SectionBlocksView';
+import ViewToggle, { ViewType } from './components/ViewToggle';
 
 interface LiquidFile {
   name: string;
@@ -38,6 +41,7 @@ export default function Home() {
   const [scanResult, setScanResult] = useState<ScanResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [showOnlyWithSchema, setShowOnlyWithSchema] = useState(false);
+  const [currentView, setCurrentView] = useState<ViewType>('pages'); // Default to Pages view
 
   const scanFiles = async () => {
     setLoading(true);
@@ -183,18 +187,41 @@ export default function Home() {
               </div>
             </div>
 
-            {/* File Explorer */}
+            {/* View Toggle and Content */}
             <div className="bg-white rounded-lg shadow">
               <div className="px-6 py-4 border-b border-gray-200">
-                <h2 className="text-xl font-semibold text-gray-900">
-                  📁 File Explorer {showOnlyWithSchema && '(Schema Files Only)'}
-                </h2>
-                <p className="text-sm text-gray-600 mt-1">
-                  Hierarchical view of directories, files, and their schemas. Click to expand/collapse sections.
-                </p>
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <h2 className="text-xl font-semibold text-gray-900">
+                      {currentView === 'pages' ? '📄 Pages View' : 
+                       currentView === 'blocks' ? '🧩 Blocks View' : '📁 File Explorer'}
+                      {showOnlyWithSchema && currentView === 'files' && ' (Schema Files Only)'}
+                    </h2>
+                    <p className="text-sm text-gray-600 mt-1">
+                      {currentView === 'pages' 
+                        ? 'Organized by page type and template structure. Default view for theme analysis.'
+                        : currentView === 'blocks'
+                        ? 'Analysis of which blocks can be added to each section. Shows compatibility rules.'
+                        : 'Hierarchical view of directories, files, and their schemas. Click to expand/collapse sections.'
+                      }
+                    </p>
+                  </div>
+                  
+                  <ViewToggle 
+                    currentView={currentView} 
+                    onViewChange={setCurrentView} 
+                  />
+                </div>
               </div>
+              
               <div className="p-6">
-                <FileExplorer files={filteredFiles} />
+                {currentView === 'pages' ? (
+                  <PagesView files={filteredFiles} />
+                ) : currentView === 'blocks' ? (
+                  <SectionBlocksView />
+                ) : (
+                  <FileExplorer files={filteredFiles} />
+                )}
               </div>
             </div>
           </div>
